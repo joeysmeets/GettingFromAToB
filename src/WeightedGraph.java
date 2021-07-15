@@ -23,6 +23,7 @@ public class WeightedGraph {
 	public WeightedGraph() {
 		r = new Random();
 		fillVertexNames();
+		createRandomWeightedGraph(20,40);
 	}
 	
 	/**
@@ -89,16 +90,19 @@ public class WeightedGraph {
 	 * @return connections String of each vertex' connections.
 	 */
 	public String toString() {
-//		for (int i = 0; i < vertices; i++) {
-//			for (int j = 0; j < vertices; j++) {
-//				System.out.println(matrix[i][j] + "  ");
-//			}
-//			System.out.println();
-//		}
+		for (int i = 0; i < vertices; i++) {
+			for (int j = 0; j < vertices; j++) {
+				System.out.print(matrix[i][j]);
+				System.out.print("\t");
+			}
+			System.out.println();
+		}
+		System.out.println();
+		
 		String connections = "";
 		
 		for (int i = 0; i < vertices; i++) {
-			connections += "Vertex " + vertexNames[i] + " is connected to:" + "\n";
+			connections += vertexNames[i] + " is connected to:" + "\n";
 			for (int j = 0; j < vertices; j++) {
 				if(matrix[i][j] != 0) {
 					connections += vertexNames[j] + "\n";
@@ -137,50 +141,64 @@ public class WeightedGraph {
 		
 		Vertex currentVertex = weightedGraph.get(startVertex);
 		Vertex destinationVertex = weightedGraph.get(endVertex);
-		
+		// local Vertex object to keep track of the shortest path neighbor for each Vertex
 		Vertex smallestDistanceVertex = new Vertex(1000, "smallestDistance");
+		// set distance to a max int value, so that the neighbor's distance will always be smaller
 		smallestDistanceVertex.setDistance(Integer.MAX_VALUE);
 		
+		// as long as the current Vertex is not the destination vertex, we keep going
 		while (currentVertex != destinationVertex) {
+			// if the current vertex has neighbors, continue
 			if (currentVertex.getNeighbors().isEmpty() == false) {
+				// looping through all neighbors of the current vertex
 				for (Vertex neighbor : currentVertex.neighbors.keySet()) {
+					// if the neighbor has not been visited yet, continue
 					if (neighbor.isVisited() == false) {
+						// if the neighbor has a distance of 0 (untouched) or has a bigger distance than the path from start to him through the current vertex
 						if (neighbor.getDistance() == 0 || 
 							neighbor.getDistance() > matrix[currentVertex.getIndex()][neighbor.getIndex()] + currentVertex.getDistance()) {
-							
+							// if the cheapest path is asked for, set the distance of the neighbor distance to the current distance + the weight of the edge between
 							if (mode == Mode.CHEAPEST) {
 								neighbor.setDistance(currentVertex.getDistance() + matrix[currentVertex.getIndex()][neighbor.getIndex()] + currentVertex.getDistance());	
 							}
-							
+							// if the shortest path is asked for, set the distance of the neighbor distance to the current distance + 1 ( 1 more edge)
 							if (mode == Mode.SHORTEST) {
 								neighbor.setDistance(currentVertex.getDistance() + 1);
 								}
-							
+							// if the distance of the checked neighbor is smaller than the current smallest neighbor, change the smallestDistanceVertex value to that neighbor
 							if (neighbor.getDistance() < smallestDistanceVertex.getDistance()) {
 								smallestDistanceVertex = neighbor;
 							}
 						}
 					}
+					// set the changed neighbor, so that we know where the path comes from
 					neighbor.setPrevious(currentVertex);	
 				}
+				// the current vertex has been checked
 				currentVertex.setVisited(true);
+				// the new current vertex is the neighbor with the shortest or cheapest path
 				currentVertex = smallestDistanceVertex;
+				// reset the smallestDistanceVertex to keep track of the new neighbors
 				smallestDistanceVertex.setDistance(Integer.MAX_VALUE);
 			} 
-		}	
+		}
+		// if the destination has been reached, print the path
 		if (currentVertex == destinationVertex) {
 			Stack<String> path = new Stack<>();
 			String pathString = "";
 			
+			// adding all names of the path onto a stack
 			while (currentVertex.getIndex() != startVertex) {
 				path.push(currentVertex.getPrevious().getName());
 				currentVertex = currentVertex.getPrevious();
 			}
 			
+			// popping all items to get them in the right order to put them in a String
 			for (int i = 0; i < path.size(); i++) {
 				pathString = pathString + path.pop() + ", ";
 			}
 			
+			// returning an appropriate message depending on the mode
 			if (mode == Mode.CHEAPEST) {
 				return "The cheapest way to get from " + weightedGraph.get(startVertex) + " to " + weightedGraph.get(endVertex) + "is through: " + "\n" + pathString + "\n" +
 						"This way has an end total distance of " + destinationVertex.getDistance(); 	
