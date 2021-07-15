@@ -1,4 +1,8 @@
-
+/**
+ * Exception for when there is no connection between the start- and end vertices.
+ * @author Joey & Yusuf
+ * @version 15.07.21
+ */
 public class NoPathException extends Exception {
 
 	/**

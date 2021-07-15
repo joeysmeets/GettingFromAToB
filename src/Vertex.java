@@ -1,7 +1,7 @@
 import java.util.HashMap;
 
 /**
- * Class to define a custom type to represent edges in a weighted graph
+ * Class to define a custom type to represent Vertices in a weighted graph
  * @author Joey & Yusuf
  * @version 15.07..21
  */
@@ -13,7 +13,6 @@ public class Vertex {
 	HashMap<Vertex, Integer> neighbors = new HashMap<>();
 	private Vertex previous;
 	private boolean visited;
-	
 	/**
 	 * Constructor with only name and index.
 	 * @param index index in the Matrix.
@@ -22,6 +21,7 @@ public class Vertex {
 	public Vertex (int index, String name) {
 		this.index = index;
 		this.name = name;
+		distance = 0;
 	}
 	
 	// Setters and Getters
@@ -101,6 +101,14 @@ public class Vertex {
 	}
 	
 	/**
+	 * Returns the vertex that came before in the shorts- or cheapest path.
+	 * @return previous The Vertex that came before in the path.
+	 */
+	public Vertex getPrevious() {
+		return previous;
+	}
+	
+	/**
 	 * Sets the visited status of this vertex.
 	 * @param visited	Was this Vertex visited.
 	 */
@@ -115,6 +123,4 @@ public class Vertex {
 	public boolean isVisited() {
 		return visited;
 	}
-
-	
 }

@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Stack;
 
 /**
- * 
+ * Class that puts all classes for the weighted Graph together. 
  * @author Joey & Yusuf
- * @version 15.07..21
+ * @version 15.07.21
  */
 public class WeightedGraph {
 	
@@ -15,78 +16,23 @@ public class WeightedGraph {
 	private  int vertices;
 	private  ArrayList<Vertex> weightedGraph = new ArrayList<Vertex>();
 	
-	
+	/**
+	 * Constructor.
+	 * Sets up the Random object and fills the vertexNames with the names. 
+	 */
 	public WeightedGraph() {
 		r = new Random();
 		fillVertexNames();
 	}
 	
 	/**
-	 * 
-	 * @param from
-	 * @param to
-	 * @param weight
-	 * @return
-	 */
-	public Edge createEdge(Vertex from, Vertex to, int weight) {
-		return new Edge(from, to, weight);
-	}
-	
-	/**
-	 * 
-	 * @param index
-	 * @param name
-	 * @param previous
-	 * @param distance
-	 * @param visited
-	 * @return
-	 */
-	private Vertex createVertex(int index, String name) {
-		return new Vertex(index, name);
-	}
-	
-	/**
-	 * 
-	 * @param index
-	 * @param name
-	 * @return
-	 */
-	private Vertex createVertex(int index, String name) {
-		return new Vertex(index, name);
-	}
-	
-//	/**
-//	 * 
-//	 * @return
-//	 */
-//	private int getVertices() {
-//		return vertices;
-//	}
-//	
-//	/**
-//	 * 
-//	 * @return
-//	 */
-//	private int getEdges( ){
-//		return edges;
-//	}
-	
-	/**
-	 * 
-	 */
-	private void randomGraph() {
-		
-	}
-
-	
-	/**
 	 * Creates a Matrix with a given amount of vertices and puts a given amount of random weighted edges 
-	 * between them. If then puts the vertices in an Arraylist to store the vertices and it further contructs 
-	 * the vertices by adding the neighbors to their neighbor HashMap.  
-	 * @param vertices
-	 * @param edges
+	 * between them. It then puts the vertices in an ArrayList to store the vertices and it further constructs 
+	 * the vertices by adding the neighbors to their individual neighbor HashMap.  
+	 * @param vertices number of vertices wanted
+	 * @param edges    number of vertices wanted
 	 */
-	public void createWeightedGraph(int vertices, int edges) {
+	public void createRandomWeightedGraph(int vertices, int edges) {
 		matrix = createMatrix(vertices, edges);
 		
 		for (int i = 0; i < matrix.length; i++) {
@@ -108,9 +54,9 @@ public class WeightedGraph {
 	/**
 	 * Creates a matrix with the given amount of edges and vertices. 
 	 * It also randomly puts the weight between vertices.
-	 * @param vertices
-	 * @param edges
-	 * @return
+	 * @param verticess number of vertices wanted
+	 * @param edgess    number of vertices wanted
+	 * @return matrix   Complete matrix of the given number of vertices and edges.
 	 */
 	private int[][] createMatrix(int verticess, int edgess) {
 		vertices = verticess;
@@ -129,7 +75,7 @@ public class WeightedGraph {
 			int j = r.nextInt(vertices);
 			if(matrix[i][j] == 0 && i != j && matrix[j][i] == 0){
 				int temp = r.nextInt(100) + 1;
-				System.out.println(matrix[i][j] = temp);
+				matrix[i][j] = temp;
 				matrix[j][i] = temp;
 				edges--;
 			}
@@ -139,7 +85,8 @@ public class WeightedGraph {
 	
 	
 	/**
-	 * 
+	 * Overrides the default toString method and makes sure that the two-dimensional Array is shown better.
+	 * @return connections String of each vertex' connections.
 	 */
 	public String toString() {
 //		for (int i = 0; i < vertices; i++) {
@@ -175,26 +122,98 @@ public class WeightedGraph {
 	}
 	
 	/**
-	 * 
-	 * @param startVertex
-	 * @param endVertex
-	 * @return
-	 * @throws NoPathException 
+	 * Determines the shortest of cheapest way between two vertices. 
+	 * @param  startVertex 		Starting point of the path.
+	 * @param  endVertex   		End point of the path.
+	 * @param  mode             Shortest or Cheapest.
+	 * @return pathString 		Through which vertices does the path go and what is the final distance value.
+	 * @throws NoPathException 	Exception for when there is no connection between the start- and end vertices.
 	 */
-	public String dijksta(int startVertex, int endVertex, Mode mode) throws NoPathException {
-//		if (weightedGraph.get(startVertex).getNeighbors().isEmpty() || weightedGraph.get(endVertex).getNeighbors().isEmpty()) {
-//			throw new NoPathException("There is no path from " + weightedGraph.get(startVertex).getName() + " to " + weightedGraph.get(endVertex).getName());
-//		}
+	public String dijkstra(int startVertex, int endVertex, Mode mode) throws NoPathException {
+		if (weightedGraph.get(startVertex).getNeighbors().isEmpty() == true || 
+			weightedGraph.get(endVertex).getNeighbors().isEmpty() == true) {
+			throw new NoPathException("There is no path from " + weightedGraph.get(startVertex).getName() + " to " + weightedGraph.get(endVertex).getName());
+		}
 		
-		Vertex vertex = weightedGraph.get(startVertex);
-		vertex.setVisited(true);
-		for (Vertex v : vertex.neighbors.keySet()) {
-			if(v.isVisited() == false && v.getDistance() > v.neighbors.get(v) + v.getDistance()) {
-//				v.
+		Vertex currentVertex = weightedGraph.get(startVertex);
+		Vertex destinationVertex = weightedGraph.get(endVertex);
+		
+		Vertex smallestDistanceVertex = new Vertex(1000, "smallestDistance");
+		smallestDistanceVertex.setDistance(Integer.MAX_VALUE);
+		
+		while (currentVertex != destinationVertex) {
+			if (currentVertex.getNeighbors().isEmpty() == false) {
+				for (Vertex neighbor : currentVertex.neighbors.keySet()) {
+					if (neighbor.isVisited() == false) {
+						if (neighbor.getDistance() == 0 || 
+							neighbor.getDistance() > matrix[currentVertex.getIndex()][neighbor.getIndex()] + currentVertex.getDistance()) {
+							
+							if (mode == Mode.CHEAPEST) {
+								neighbor.setDistance(currentVertex.getDistance() + matrix[currentVertex.getIndex()][neighbor.getIndex()] + currentVertex.getDistance());	
+							}
+							
+							if (mode == Mode.SHORTEST) {
+								neighbor.setDistance(currentVertex.getDistance() + 1);
+								}
+							
+							if (neighbor.getDistance() < smallestDistanceVertex.getDistance()) {
+								smallestDistanceVertex = neighbor;
+							}
+						}
+					}
+					neighbor.setPrevious(currentVertex);	
+				}
+				currentVertex.setVisited(true);
+				currentVertex = smallestDistanceVertex;
+				smallestDistanceVertex.setDistance(Integer.MAX_VALUE);
+			} 
+		}	
+		if (currentVertex == destinationVertex) {
+			Stack<String> path = new Stack<>();
+			String pathString = "";
+			
+			while (currentVertex.getIndex() != startVertex) {
+				path.push(currentVertex.getPrevious().getName());
+				currentVertex = currentVertex.getPrevious();
+			}
+			
+			for (int i = 0; i < path.size(); i++) {
+				pathString = pathString + path.pop() + ", ";
+			}
+			
+			if (mode == Mode.CHEAPEST) {
+				return "The cheapest way to get from " + weightedGraph.get(startVertex) + " to " + weightedGraph.get(endVertex) + "is through: " + "\n" + pathString + "\n" +
+						"This way has an end total distance of " + destinationVertex.getDistance(); 	
+			}
+			
+			if (mode == Mode.SHORTEST) {
+				return "The shortest way to get from " + weightedGraph.get(startVertex) + " to " + weightedGraph.get(endVertex) + "is through: " + "\n" + pathString + "\n" +
+						"This way has an end total distance of " + destinationVertex.getDistance();	 
 			}
 		}
+		return "";
+	}	
+	
+	/**
+	 * Takes two random vertices in a weighted graph and determines the shortest- or cheapest path.
+	 * @param  mode  			Shortest or Cheapest.
+	 * @return pathString   	Through which vertices does the path go and what is the final distance value.
+	 * @throws NoPathException	Exception for when there is no connection between the start- and end vertices.
+	 */
+	public String randomDijkstra(Mode mode) throws NoPathException {
+		int start = r.nextInt(weightedGraph.size());
+		int end =   r.nextInt(weightedGraph.size());
+		while (end == start) {
+			end =   r.nextInt(weightedGraph.size());
+		}
+		return dijkstra(start, end, mode);
 	}
 	
+	/**
+	 * Enum for two modes of Dijkstra.
+	 * @author Joey & Yusuf
+	 * @version 15.07.21
+	 */
 	public enum Mode {
 		CHEAPEST, SHORTEST;
 	}
