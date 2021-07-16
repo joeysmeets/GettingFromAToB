@@ -9,8 +9,8 @@ public class Vertex {
 	
 	private int index;
 	private String name;
-	private int distance;
-	HashMap<Vertex, Integer> neighbors = new HashMap<>();
+	private Double distance;
+	HashMap<Vertex, Double> neighbors = new HashMap<>();
 	private Vertex previous;
 	private boolean visited;
 	/**
@@ -21,7 +21,7 @@ public class Vertex {
 	public Vertex (int index, String name) {
 		this.index = index;
 		this.name = name;
-		distance = 0;
+		distance = Double.POSITIVE_INFINITY;
 	}
 	
 	// Setters and Getters
@@ -62,7 +62,7 @@ public class Vertex {
 	 * Sets the shortest distance to from the starting vertex to this vertex.
 	 * @param distance	Integer value of shortest distance.
 	 */
-	public void setDistance(int distance) {
+	public void setDistance(Double distance) {
 		this.distance = distance;
 	}
 	
@@ -70,7 +70,7 @@ public class Vertex {
 	 * Returns shortest distance to the starting vertex.
 	 * @return distance.
 	 */
-	public int getDistance() {
+	public Double getDistance() {
 		return distance;
 	}
 	
@@ -79,7 +79,7 @@ public class Vertex {
 	 * @param neighbor 
 	 * @param distance weight between this vertex and its neighbor
 	 */
-	public void addNeighbor(Vertex neighbor, Integer distance) {
+	public void addNeighbor(Vertex neighbor, Double distance) {
 		neighbors.put(neighbor, distance);
 	}
 	
@@ -88,7 +88,7 @@ public class Vertex {
 	 * Returns all adjacent neighbors with the distance to them.
 	 * @return neighbors HashMap of all neighbors of the vertex with their distance.
 	 */
-	public HashMap<Vertex, Integer> getNeighbors() {
+	public HashMap<Vertex, Double> getNeighbors() {
 		return neighbors;
 	}
 	

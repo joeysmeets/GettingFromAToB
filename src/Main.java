@@ -9,8 +9,8 @@ public class Main {
 		WeightedGraph test = new WeightedGraph();
 //		test.createRandomWeightedGraph(20,40);
 //		matrix = createMatrix(20, 40);
-//		test.randomDijkstra(WeightedGraph.Mode.CHEAPEST);
-		test.dijkstra(1, 3, WeightedGraph.Mode.SHORTEST);
+		test.randomDijkstra(WeightedGraph.Mode.CHEAPEST);
+//		test.dijkstra(1, 3, WeightedGraph.Mode.SHORTEST);
 //		System.out.println(test);
 	}
 }
