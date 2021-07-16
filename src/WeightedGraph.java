@@ -114,7 +114,7 @@ public class WeightedGraph {
 			connections += vertexNames[i] + " is connected to:" + "\n";
 			for (int j = 0; j < vertices; j++) {
 				if(matrix[i][j] != 0) {
-					connections += vertexNames[j] + "\n";
+					connections += vertexNames[j] + "(" + matrix[i][j] + ")" + "\n";
 				}
 			}
 			connections += "\n" + "\n";
@@ -133,6 +133,71 @@ public class WeightedGraph {
 		                         "Bogota", "Jakarta", "Chennai", "Lima", "Bangkok", "Seoul", "Nagoya", "Hyderadad",
 		                         "London", "Tehran", "Chicago", "Chengdu"};
 	}
+	
+	
+//	public String dijkstra(int startVertexIndex, int endVertexIndex, Mode mode) throws NoPathException {
+//		Vertex currentVertex = weightedGraph.get(startVertexIndex);
+//		Vertex destinationVertex = weightedGraph.get(endVertexIndex);
+//		
+//		Vertex shortestPathVertex = new Vertex(1000, "shortest path");
+//		
+//		if (currentVertex.getNeighbors().isEmpty() == true || 
+//				destinationVertex.getNeighbors().isEmpty() == true) {
+//				throw new NoPathException("There is no path from " + currentVertex.getName() + " to " + destinationVertex.getName());
+//			}
+//		
+//		while(destinationVertex.isVisited() == false) {
+//			shortestPathVertex.setDistance(Double.POSITIVE_INFINITY);
+//			for (int j = 0; j < vertices; j++) {
+//				for (Vertex neighbor : currentVertex.neighbors.keySet()) {
+//					if (neighbor.isVisited() == false) {
+//						if (neighbor.getDistance() > currentVertex.getDistance() + currentVertex.neighbors.get(neighbor)) {
+//							if (mode == Mode.CHEAPEST) {
+//								neighbor.setDistance(currentVertex.getDistance() + currentVertex.neighbors.get(neighbor));
+//								System.out.println(currentVertex.getDistance() + currentVertex.neighbors.get(neighbor)); 
+//							}
+//							// if the shortest path is asked for, set the distance of the neighbor distance to the current distance + 1 ( 1 more edge)
+//							if (mode == Mode.SHORTEST) {
+//								neighbor.setDistance(currentVertex.getDistance() + 1);
+//							}
+//							neighbor.setPrevious(currentVertex);
+//						}
+//						if (neighbor.getDistance() < shortestPathVertex.getDistance()) {
+//							shortestPathVertex.setDistance(neighbor.getDistance());
+//						}
+//					}
+//				}
+//			}
+//			currentVertex.setVisited(true);
+//			currentVertex = shortestPathVertex;
+//			if (currentVertex == destinationVertex) {
+//				break;
+//			}
+//		}
+//		Stack<String> path = new Stack<>();
+//		String pathString = "";
+//		
+//		while (currentVertex.getIndex() != startVertexIndex) {
+//			path.push(currentVertex.getPrevious().getName());
+//			currentVertex = currentVertex.getPrevious();
+//			if (currentVertex.getIndex() == startVertexIndex) {
+//				break;
+//			}
+//		}
+//		for (int i = 0; i < path.size(); i++) {
+//			pathString = pathString + path.pop() + ", ";
+//		}
+//		
+//		if (mode == Mode.CHEAPEST) {
+//			return "The cheapest way to get from " + weightedGraph.get(startVertexIndex).getName() + " to " + weightedGraph.get(endVertexIndex).getName()  + "is through: " + "\n" + pathString + "\n" +
+//					"This way has an end total distance of " + destinationVertex.getDistance(); 	
+//		}
+//		if (mode == Mode.SHORTEST) {
+//			return "The shortest way to get from " + weightedGraph.get(startVertexIndex).getName()  + " to " + weightedGraph.get(endVertexIndex).getName()  + "is through: " + "\n" + pathString + "\n" +
+//					"This way has an end total distance of " + destinationVertex.getDistance();	 
+//		}
+//		return " ";
+//	}
 	
 	/**
 	 * Determines the shortest of cheapest way between two vertices. 
@@ -173,7 +238,7 @@ public class WeightedGraph {
 							// if the cheapest path is asked for, set the distance of the neighbor distance to the current distance + the weight of the edge between
 							if (mode == Mode.CHEAPEST) {
 								neighbor.setDistance(currentVertex.getDistance() + currentVertex.neighbors.get(neighbor));
-//								System.out.println(currentVertex.getDistance() + currentVertex.neighbors.get(neighbor)); 
+								System.out.println(currentVertex.getDistance() + currentVertex.neighbors.get(neighbor)); 
 							}
 							// if the shortest path is asked for, set the distance of the neighbor distance to the current distance + 1 ( 1 more edge)
 							if (mode == Mode.SHORTEST) {
@@ -181,27 +246,27 @@ public class WeightedGraph {
 								}
 							// set the changed neighbor, so that we know where the path comes from
 							neighbor.setPrevious(currentVertex);
-//							System.out.println(currentVertex.getName());
-//							System.out.println(neighbor.getName());
+							System.out.println(currentVertex.getName());
+							System.out.println(neighbor.getName());
 						}
 						// if the distance of the checked neighbor is smaller than the current smallest neighbor, change the smallestDistanceVertex value to that neighbor
 						if (neighbor.getDistance() < smallestDistanceVertex.getDistance()) {
 							smallestDistanceVertex = neighbor;
-//							System.out.println(smallestDistanceVertex.getName());
+							System.out.println(smallestDistanceVertex.getName());
 						}
 					}	
 				}
+				System.out.println(currentVertex.getName());
+				System.out.println(currentVertex.getDistance());
 				// the current vertex has been checked
 				currentVertex.setVisited(true);
 				// the new current vertex is the neighbor with the shortest or cheapest path
 				currentVertex = smallestDistanceVertex;
-//				System.out.println(currentVertex.getName());
-//				System.out.println(currentVertex.getDistance());
+				System.out.println(currentVertex.getName());
+				System.out.println(currentVertex.getDistance());
 				// reset the smallestDistanceVertex to keep track of the new neighbors
 				smallestDistanceVertex.setDistance(Double.POSITIVE_INFINITY);
-			} else {
-				return "There is no path between the two vertices.";
-			}
+			} 
 		}
 		// if the destination has been reached, print the path
 		if (destinationVertex.isVisited() == true) {
